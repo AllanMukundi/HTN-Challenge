@@ -27,7 +27,7 @@ def index():
         data[i].extend(skills)
     return flask.jsonify(data)
 
-@app.route('/users/<int:id>', methods=['GET', 'PUT'])
+@app.route('/users/<int:id>', methods=['GET'])
 def user(id):
     cursor = get_db().cursor()
     cursor.execute("SELECT * FROM Users WHERE ID = ?", (id,))
@@ -43,8 +43,15 @@ def user(id):
         skills.append(data_s[i])
     data.extend(skills)
     return flask.jsonify(data)
+
+@app.route('/users/<int:id>', methods=['PUT'])
 def update(id):
-    None
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM Users WHERE ID = ?", (id,))
+    data = cursor.fetchone()
+    data['phone'] = flask.request.json['phone']
+    return flask.jsonify(data)
+
 
 @app.teardown_request
 def teardown_request(exception):
