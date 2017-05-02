@@ -24,14 +24,24 @@ def index():
             data_s[n] = list(data_s[n])
             del data_s[n][0]
             skills.append(data_s[n])
-        data[i].extend([skills])
+        data[i].extend(skills)
     return flask.jsonify(data)
 
 @app.route('/users/<int:id>', methods=['GET', 'PUT'])
 def user(id):
     cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM Users WHERE ID" + id)
-    data = cursor.fetchall()
+    cursor.execute("SELECT * FROM Users WHERE ID = ?", (id,))
+    data = cursor.fetchone()
+    data = list(data)
+    cursor_s = get_db().cursor()
+    cursor_s.execute("SELECT * FROM Skills WHERE email=:email", {'email': data[4]})
+    data_s = cursor_s.fetchall()
+    skills = []
+    for i in range(len(data_s)):
+        data_s[i] = list(data_s[i])
+        del data_s[i][0]
+        skills.append(data_s[i])
+    data.extend(skills)
     return flask.jsonify(data)
 def update(id):
     None
